@@ -4,3 +4,5 @@
 
 /// Flutter control system widgets, like on-off controller.
 library control_system;
+
+export 'src/on_off_controller.dart';
