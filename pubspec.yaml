@@ -1,0 +1,17 @@
+name: control_system
+description: Flutter control system widgets, like on-off controller.
+homepage: https://github.com/FatulM/shamsi_date
+repository: https://github.com/FatulM/shamsi_date
+
+version: 0.1.0
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^1.0.0
