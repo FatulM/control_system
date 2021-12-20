@@ -54,8 +54,4 @@ OnOffControllerBuilder(
 );
 ```
 
-<!--suppress HtmlDeprecatedAttribute -->
-<p align="center">
-    <!--suppress CheckImageSize -->
-    <img src=".images/on-off-controller.gif" width="50%"  alt="on-off controller example"/>
-</p>
+![on-off controller example](.images/on-off-controller.gif)
