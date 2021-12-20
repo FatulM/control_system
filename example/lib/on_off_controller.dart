@@ -1,14 +1,28 @@
 import 'package:control_system/control_system.dart';
 import 'package:flutter/material.dart';
 
-class OnOffControllerExample extends StatefulWidget {
+class OnOffControllerExample extends StatelessWidget {
   const OnOffControllerExample({Key? key}) : super(key: key);
 
   @override
-  _OnOffControllerExampleState createState() => _OnOffControllerExampleState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('on-off controller'),
+      ),
+      body: const _Body(),
+    );
+  }
 }
 
-class _OnOffControllerExampleState extends State<OnOffControllerExample> {
+class _Body extends StatefulWidget {
+  const _Body({Key? key}) : super(key: key);
+
+  @override
+  _BodyState createState() => _BodyState();
+}
+
+class _BodyState extends State<_Body> {
   var _value = 10.0;
 
   @override

@@ -13,21 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'control_system examples',
       theme: ThemeData.light(),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('on-off controller'),
-      ),
-      body: const OnOffControllerExample(),
+      home: const OnOffControllerExample(),
     );
   }
 }
