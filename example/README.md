@@ -15,7 +15,10 @@ OnOffControllerBuilder(
 );
 ```
 
-<!--suppress CheckImageSize -->
-<img src="../.images/on-off-controller.gif" width="50%"  alt="on-off controller example"/>
+<!--suppress HtmlDeprecatedAttribute -->
+<p align="center">
+    <!--suppress CheckImageSize -->
+    <img src="../.images/on-off-controller.gif" width="50%"  alt="on-off controller example"/>
+</p>
 
 see complete code [here](lib/on_off_controller.dart).
