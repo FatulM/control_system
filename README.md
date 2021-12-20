@@ -29,7 +29,7 @@ import 'package:control_system/control_system.dart';
 
 These controllers are provided in this package:
 
-### On-Off Controller
+### on-off controller
 
 On–off control uses a feedback controller that switches abruptly between two states. A simple bi-metallic domestic
 thermostat can be described as an on-off controller. When the temperature in the room (PV) goes below the user setting (
