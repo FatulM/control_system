@@ -1,5 +1,7 @@
 # control_system
 
+[![pub](https://img.shields.io/pub/v/control_system.svg?color=blue&label=control_system)](https://pub.dev/packages/control_system)
+
 Flutter control system widgets, like on-off controller.
 
 ## Introduction
