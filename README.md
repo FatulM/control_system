@@ -1,6 +1,8 @@
 # control_system
 
 [![pub](https://img.shields.io/pub/v/control_system.svg?color=blue&label=control_system)](https://pub.dev/packages/control_system)
+[![build](https://img.shields.io/github/workflow/status/FatulM/control_system/build?label=build)](https://github.com/FatulM/control_system/actions/workflows/build.yml)
+[![coverage](https://img.shields.io/codecov/c/gh/FatulM/control_system?label=coverage)](https://codecov.io/gh/FatulM/control_system)
 
 Flutter control system widgets, like on-off controller.
 
