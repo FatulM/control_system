@@ -153,6 +153,11 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
 
+    properties.add(ObjectFlagProperty(
+      'listener',
+      widget.listener,
+      showName: true,
+    ));
     properties.add(FlagProperty(
       'isResetStateOnUpdate',
       value: widget.isResetStateOnUpdate,
