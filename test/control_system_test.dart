@@ -4,6 +4,32 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('OnOffControllerBuilder', () {
+    test('diagnosis', () {
+      final widget = OnOffControllerBuilder(
+        upperLimit: 60.0,
+        lowerLimit: 40.0,
+        value: 10.0,
+        builder: (context, state) => Container(),
+      );
+      final element = widget.createElement();
+      final state = element.state;
+      final diagnosticsNode = state.toDiagnosticsNode();
+      final properties = diagnosticsNode.getProperties();
+
+      expect(
+        properties.map((e) => e.toStringDeep()).toList(),
+        containsAll([
+          'listener: null - has NOT change listener',
+          'isResetStateOnUpdate: true - resets controller state on widget updates',
+          'isCallChangeListenerForInitialState: true - calls change listener for initial state',
+          'initialState: false',
+          'upperLimit: 60.0',
+          'lowerLimit: 40.0',
+          'value: 10.0',
+        ]),
+      );
+    });
+
     testWidgets('basic interaction', (tester) async {
       double _value = 10.0;
       late StateSetter _updater;
