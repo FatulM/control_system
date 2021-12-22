@@ -157,18 +157,24 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
       'listener',
       widget.listener,
       showName: true,
+      ifPresent: 'non-null - has change listener',
+      ifNull: 'null - has NOT change listener',
     ));
     properties.add(FlagProperty(
       'isResetStateOnUpdate',
       value: widget.isResetStateOnUpdate,
       defaultValue: true,
       showName: true,
+      ifTrue: 'true - resets controller state on widget updates',
+      ifFalse: 'false - does NOT reset controller state on widget updates',
     ));
     properties.add(FlagProperty(
       'isCallChangeListenerForInitialState',
       value: widget.isCallChangeListenerForInitialState,
       defaultValue: true,
       showName: true,
+      ifTrue: 'true - calls change listener for initial state',
+      ifFalse: 'false - does NOT call change listener for initial state',
     ));
     properties.add(DiagnosticsProperty<bool>('initialState', widget.initialState, defaultValue: false));
     properties.add(DoubleProperty('upperLimit', widget.upperLimit));
