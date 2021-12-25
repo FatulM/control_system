@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('OnOffControllerBuilder', () {
-    test('diagnosis', () {
+    test('diagnosis should provide correct information', () {
       final widget = OnOffControllerBuilder(
         upperLimit: 60.0,
         lowerLimit: 40.0,
@@ -30,7 +30,7 @@ void main() {
       );
     });
 
-    testWidgets('basic interaction', (tester) async {
+    testWidgets('basic interaction should work correctly', (tester) async {
       double _value = 10.0;
       late StateSetter _updater;
 
@@ -96,6 +96,71 @@ void main() {
       await check(false);
 
       update(10.0);
+      await check(false);
+    });
+
+    testWidgets('state changes should be only on `pass` not on `equal or pass`', (tester) async {
+      double _value = 10.0;
+      late StateSetter _updater;
+
+      Future<void> check(bool state) async {
+        await tester.pumpAndSettle();
+        expect(find.text('state: ${state ? 'on' : 'off'}'), findsOneWidget);
+      }
+
+      void update(double newValue) {
+        _updater(() => _value = newValue);
+      }
+
+      await tester.pumpWidget(
+        MaterialApp(
+          title: 'Testing',
+          theme: ThemeData.light(),
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                _updater = setState;
+
+                return OnOffControllerBuilder(
+                  initialState: false,
+                  value: _value,
+                  lowerLimit: 40.0,
+                  upperLimit: 60.0,
+                  builder: (context, state) {
+                    return Center(
+                      child: Text(
+                        'state: ${state ? 'on' : 'off'}',
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // value = 10.0
+      await check(false);
+
+      update(50.0);
+      await check(false);
+
+      // only on pass:
+      update(60.0);
+      await check(false);
+
+      update(70.0);
+      await check(true);
+
+      update(50.0);
+      await check(true);
+
+      // only on pass:
+      update(40.0);
+      await check(true);
+
+      update(30.0);
       await check(false);
     });
   });
