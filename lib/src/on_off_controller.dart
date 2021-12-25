@@ -26,8 +26,12 @@ typedef OnOffControllerChangeListener = void Function(bool state);
 /// {on} is {state == true}.
 /// {off} is {state == false}.
 ///
-/// It will reset state on [upperLimit], [lowerLimit] or [initialState] properties updates, if
-/// [isResetStateOnUpdate] is set to true.
+/// It will reset state on [upperLimit] or [lowerLimit] properties updates, if
+/// [isResetStateOnBoundaryUpdate] is set to true.
+/// (which is true by default).
+///
+/// It will reset state on [initialState] property updates, if
+/// [isResetStateOnBoundaryUpdate] is set to true.
 /// (which is true by default).
 ///
 /// [listener] will be called for initial state if [isCallChangeListenerForInitialState] is true.
@@ -37,7 +41,8 @@ typedef OnOffControllerChangeListener = void Function(bool state);
 class OnOffControllerBuilder extends StatefulWidget {
   const OnOffControllerBuilder({
     Key? key,
-    this.isResetStateOnUpdate = true,
+    this.isResetStateOnBoundaryUpdate = true,
+    this.isResetStateOnInitialStateUpdate = true,
     this.isCallChangeListenerForInitialState = true,
     this.initialState = false,
     required this.upperLimit,
@@ -48,8 +53,11 @@ class OnOffControllerBuilder extends StatefulWidget {
   })  : assert(upperLimit >= lowerLimit),
         super(key: key);
 
-  /// whether to reset state on update.
-  final bool isResetStateOnUpdate;
+  /// whether to reset state on boundary update.
+  final bool isResetStateOnBoundaryUpdate;
+
+  /// whether to reset state on initial state update.
+  final bool isResetStateOnInitialStateUpdate;
 
   /// whether call change listener for initial state.
   final bool isCallChangeListenerForInitialState;
@@ -133,11 +141,17 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
   void didUpdateWidget(covariant OnOffControllerBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.initialState != oldWidget.initialState ||
-        widget.upperLimit != oldWidget.upperLimit ||
-        widget.lowerLimit != oldWidget.lowerLimit) {
-      if (widget.isResetStateOnUpdate) {
+    if (widget.initialState != oldWidget.initialState) {
+      if (widget.isResetStateOnInitialStateUpdate) {
         _turnInitially();
+        return;
+      }
+    }
+
+    if (widget.upperLimit != oldWidget.upperLimit || widget.lowerLimit != oldWidget.lowerLimit) {
+      if (widget.isResetStateOnBoundaryUpdate) {
+        _turnInitially();
+        return;
       }
     }
   }
@@ -161,12 +175,20 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
       ifNull: 'null - has NOT change listener',
     ));
     properties.add(FlagProperty(
-      'isResetStateOnUpdate',
-      value: widget.isResetStateOnUpdate,
+      'isResetStateOnBoundaryUpdate',
+      value: widget.isResetStateOnBoundaryUpdate,
       defaultValue: true,
       showName: true,
-      ifTrue: 'true - resets controller state on widget updates',
-      ifFalse: 'false - does NOT reset controller state on widget updates',
+      ifTrue: 'true - resets controller state on widget boundary properties updates',
+      ifFalse: 'false - does NOT reset controller state on widget boundary properties updates',
+    ));
+    properties.add(FlagProperty(
+      'isResetStateOnInitialStateUpdate',
+      value: widget.isResetStateOnInitialStateUpdate,
+      defaultValue: true,
+      showName: true,
+      ifTrue: 'true - resets controller state on widget initial state property updates',
+      ifFalse: 'false - does NOT reset controller state on widget initial state property updates',
     ));
     properties.add(FlagProperty(
       'isCallChangeListenerForInitialState',

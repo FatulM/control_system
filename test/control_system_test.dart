@@ -20,7 +20,8 @@ void main() {
         properties.map((e) => e.toStringDeep()).toList(),
         containsAll([
           'listener: null - has NOT change listener',
-          'isResetStateOnUpdate: true - resets controller state on widget updates',
+          'isResetStateOnBoundaryUpdate: true - resets controller state on widget boundary properties updates',
+          'isResetStateOnInitialStateUpdate: true - resets controller state on widget initial state property updates',
           'isCallChangeListenerForInitialState: true - calls change listener for initial state',
           'initialState: false',
           'upperLimit: 60.0',
