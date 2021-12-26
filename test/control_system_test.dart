@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:control_system/control_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,8 +104,12 @@ void main() {
         );
       }
 
-      Future<void> check(bool state) async {
+      Future<void> settle() async {
         await widgetTester!.pumpAndSettle();
+      }
+
+      Future<void> check(bool state) async {
+        await settle();
         expect(find.text('state: ${state ? 'on' : 'off'}'), findsOneWidget);
       }
 
@@ -167,6 +173,55 @@ void main() {
 
         update(30.0);
         await check(false);
+      });
+
+      testWidgets('listener should capture all state changes, with initial state', (tester) async {
+        isCallChangeListenerForInitialState = true;
+        final streamController = StreamController<bool>();
+        listener = (bool state) {
+          streamController.add(state);
+        };
+        final stream = streamController.stream;
+
+        await initialize(tester);
+
+        update(90.0);
+        await settle();
+        update(10.0);
+        await settle();
+
+        expect(
+          stream,
+          emitsInOrder(<Matcher>[
+            isFalse,
+            isTrue,
+            isFalse,
+          ]),
+        );
+      });
+
+      testWidgets('listener should capture all state changes, without initial state', (tester) async {
+        isCallChangeListenerForInitialState = false;
+        final streamController = StreamController<bool>();
+        listener = (bool state) {
+          streamController.add(state);
+        };
+        final stream = streamController.stream;
+
+        await initialize(tester);
+
+        update(90.0);
+        await settle();
+        update(10.0);
+        await settle();
+
+        expect(
+          stream,
+          emitsInOrder(<Matcher>[
+            isTrue,
+            isFalse,
+          ]),
+        );
       });
     });
   });
