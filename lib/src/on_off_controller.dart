@@ -6,7 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// builder for [OnOffControllerBuilder].
-typedef OnOffControllerWidgetBuilder = Widget Function(BuildContext context, bool state);
+typedef OnOffControllerWidgetBuilder = Widget Function(
+  BuildContext context,
+  bool state,
+);
 
 /// change listener for [OnOffControllerBuilder].
 ///
@@ -62,7 +65,7 @@ class OnOffControllerBuilder extends StatefulWidget {
   /// whether call change listener for initial state.
   final bool isCallChangeListenerForInitialState;
 
-  /// [state] initial value.
+  /// state initial value.
   final bool initialState;
 
   /// upper limit.
@@ -85,14 +88,15 @@ class OnOffControllerBuilder extends StatefulWidget {
 }
 
 class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
-  /// if [state] ?
-  bool? state;
+  /// if [_state] ?
+  bool? _state;
 
-  // no need for [setState] since we are always changing state on widget updates.
+  // no need for [setState] since we are
+  // always changing state on widget updates.
   void _updateState(final bool newState, {required final bool isInitial}) {
-    final oldStateOrNull = state;
+    final oldStateOrNull = _state;
     if (newState != oldStateOrNull) {
-      state = newState;
+      _state = newState;
       if (!isInitial || widget.isCallChangeListenerForInitialState) {
         widget.listener?.call(newState);
       }
@@ -108,7 +112,7 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
   }
 
   void _controllerLogic() {
-    final oldState = state!;
+    final oldState = _state!;
     if (oldState) {
       // oldState == true.
       // controller was {on}:
@@ -148,7 +152,8 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
       }
     }
 
-    if (widget.upperLimit != oldWidget.upperLimit || widget.lowerLimit != oldWidget.lowerLimit) {
+    if (widget.upperLimit != oldWidget.upperLimit ||
+        widget.lowerLimit != oldWidget.lowerLimit) {
       if (widget.isResetStateOnBoundaryUpdate) {
         _turnInitially();
         return;
@@ -160,7 +165,7 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
   Widget build(BuildContext context) {
     _controllerLogic();
 
-    return widget.builder(context, state!);
+    return widget.builder(context, _state!);
   }
 
   @override
@@ -179,16 +184,20 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
       value: widget.isResetStateOnBoundaryUpdate,
       defaultValue: true,
       showName: true,
-      ifTrue: 'true - resets controller state on widget boundary properties updates',
-      ifFalse: 'false - does NOT reset controller state on widget boundary properties updates',
+      ifTrue: 'true - resets controller state on '
+          'widget boundary properties updates',
+      ifFalse: 'false - does NOT reset controller state on '
+          'widget boundary properties updates',
     ));
     properties.add(FlagProperty(
       'isResetStateOnInitialStateUpdate',
       value: widget.isResetStateOnInitialStateUpdate,
       defaultValue: true,
       showName: true,
-      ifTrue: 'true - resets controller state on widget initial state property updates',
-      ifFalse: 'false - does NOT reset controller state on widget initial state property updates',
+      ifTrue: 'true - resets controller state on '
+          'widget initial state property updates',
+      ifFalse: 'false - does NOT reset controller state on '
+          'widget initial state property updates',
     ));
     properties.add(FlagProperty(
       'isCallChangeListenerForInitialState',
@@ -198,7 +207,11 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
       ifTrue: 'true - calls change listener for initial state',
       ifFalse: 'false - does NOT call change listener for initial state',
     ));
-    properties.add(DiagnosticsProperty<bool>('initialState', widget.initialState, defaultValue: false));
+    properties.add(DiagnosticsProperty<bool>(
+      'initialState',
+      widget.initialState,
+      defaultValue: false,
+    ));
     properties.add(DoubleProperty('upperLimit', widget.upperLimit));
     properties.add(DoubleProperty('lowerLimit', widget.lowerLimit));
     properties.add(DoubleProperty('value', widget.value));
