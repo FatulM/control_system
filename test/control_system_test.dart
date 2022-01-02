@@ -55,6 +55,8 @@ void main() {
       StateSetter? stateSetter;
       OnOffControllerChangeListener? listener;
 
+      StreamController<bool>? streamController;
+
       setUp(() {
         resetOnBounds = true;
         resetOnInitial = true;
@@ -67,12 +69,17 @@ void main() {
         widgetTester = null;
         stateSetter = null;
         listener = null;
+
+        streamController = null;
       });
 
       tearDown(() {
         widgetTester = null;
         stateSetter = null;
         listener = null;
+
+        streamController?.close();
+        streamController = null;
       });
 
       Future<void> initialize(WidgetTester tester) async {
@@ -198,11 +205,12 @@ void main() {
         'listener should capture all state changes with initial state',
         (tester) async {
           callForInitial = true;
-          final streamController = StreamController<bool>();
+
+          streamController = StreamController<bool>();
           listener = (bool state) {
-            streamController.add(state);
+            streamController!.add(state);
           };
-          final stream = streamController.stream;
+          final stream = streamController!.stream;
 
           await initialize(tester);
 
@@ -227,11 +235,12 @@ void main() {
         'listener should capture all state changes WITHOUT initial state',
         (tester) async {
           callForInitial = false;
-          final streamController = StreamController<bool>();
+
+          streamController = StreamController<bool>();
           listener = (bool state) {
-            streamController.add(state);
+            streamController!.add(state);
           };
-          final stream = streamController.stream;
+          final stream = streamController!.stream;
 
           await initialize(tester);
 
@@ -244,6 +253,97 @@ void main() {
             stream,
             emitsInOrder(<Matcher>[
               isTrue,
+              isFalse,
+            ]),
+          );
+        },
+      );
+
+      testWidgets(
+        'given reset on initial state change enabled then '
+        'should reset state if initial state changes',
+        (tester) async {
+          callForInitial = true;
+          resetOnInitial = true;
+
+          streamController = StreamController<bool>();
+          listener = (bool state) {
+            streamController!.add(state);
+          };
+          final stream = streamController!.stream;
+
+          await initialize(tester);
+
+          await settle();
+          update(() => initialState = true);
+          await settle();
+
+          expect(
+            stream,
+            emitsInOrder(<Matcher>[
+              isFalse,
+              // should be changed immediately back and forth:
+              isTrue,
+              isFalse,
+            ]),
+          );
+        },
+      );
+
+      testWidgets(
+        'given reset on initial state change enabled then '
+        'should reset state if initial state changes '
+        'and also we change value to match changed initial state',
+        (tester) async {
+          callForInitial = true;
+          resetOnInitial = true;
+
+          streamController = StreamController<bool>();
+          listener = (bool state) {
+            streamController!.add(state);
+          };
+          final stream = streamController!.stream;
+
+          await initialize(tester);
+
+          await settle();
+          update(() => initialState = true);
+          updateValue(90);
+          await settle();
+
+          expect(
+            stream,
+            emitsInOrder(<Matcher>[
+              isFalse,
+              // should be not oscillate:
+              isTrue,
+            ]),
+          );
+        },
+      );
+
+      testWidgets(
+        'given reset on initial state change NOT enabled then '
+        'should NOT reset state if initial state changes',
+        (tester) async {
+          callForInitial = true;
+          resetOnInitial = true;
+
+          streamController = StreamController<bool>();
+          listener = (bool state) {
+            streamController!.add(state);
+          };
+          final stream = streamController!.stream;
+
+          await initialize(tester);
+
+          await settle();
+          update(() => initialState = true);
+          await settle();
+
+          expect(
+            stream,
+            emitsInOrder(<Matcher>[
               isFalse,
             ]),
           );
