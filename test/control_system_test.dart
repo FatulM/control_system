@@ -9,6 +9,10 @@ void main() {
     group('dart-tests', () {
       test('diagnosis should provide correct information', () {
         final widget = OnOffControllerBuilder(
+          isResetStateOnInitialStateUpdate: true,
+          isResetStateOnBoundaryUpdate: true,
+          isCallChangeListenerForInitialState: true,
+          initialState: false,
           upperLimit: 60.0,
           lowerLimit: 40.0,
           value: 10.0,
@@ -116,11 +120,16 @@ void main() {
         expect(find.text('state: ${state ? 'on' : 'off'}'), findsOneWidget);
       }
 
-      void update(double newValue) {
-        stateSetter!(() => value = newValue);
+      void update(VoidCallback fn) {
+        stateSetter!(fn);
+      }
+
+      void updateValue(double newValue) {
+        update(() => value = newValue);
       }
 
       testWidgets(
+        'given default configuration then '
         'basic interaction should work correctly',
         (tester) async {
           await initialize(tester);
@@ -128,28 +137,28 @@ void main() {
           // value = 10.0
           await check(false);
 
-          update(30.0);
+          updateValue(30.0);
           await check(false);
 
-          update(50.0);
+          updateValue(50.0);
           await check(false);
 
-          update(70.0);
+          updateValue(70.0);
           await check(true);
 
-          update(90.0);
+          updateValue(90.0);
           await check(true);
 
-          update(70.0);
+          updateValue(70.0);
           await check(true);
 
-          update(50.0);
+          updateValue(50.0);
           await check(true);
 
-          update(30.0);
+          updateValue(30.0);
           await check(false);
 
-          update(10.0);
+          updateValue(10.0);
           await check(false);
         },
       );
@@ -162,30 +171,31 @@ void main() {
           // value = 10.0
           await check(false);
 
-          update(50.0);
+          updateValue(50.0);
           await check(false);
 
           // only on pass:
-          update(60.0);
+          updateValue(60.0);
           await check(false);
 
-          update(70.0);
+          updateValue(70.0);
           await check(true);
 
-          update(50.0);
+          updateValue(50.0);
           await check(true);
 
           // only on pass:
-          update(40.0);
+          updateValue(40.0);
           await check(true);
 
-          update(30.0);
+          updateValue(30.0);
           await check(false);
         },
       );
 
       testWidgets(
-        'listener should capture all state changes, with initial state',
+        'given if we should call change listener for initial state then '
+        'listener should capture all state changes with initial state',
         (tester) async {
           callForInitial = true;
           final streamController = StreamController<bool>();
@@ -196,9 +206,9 @@ void main() {
 
           await initialize(tester);
 
-          update(90.0);
+          updateValue(90.0);
           await settle();
-          update(10.0);
+          updateValue(10.0);
           await settle();
 
           expect(
@@ -213,7 +223,8 @@ void main() {
       );
 
       testWidgets(
-        'listener should capture all state changes, without initial state',
+        'given if we should NOT call change listener for initial state then '
+        'listener should capture all state changes WITHOUT initial state',
         (tester) async {
           callForInitial = false;
           final streamController = StreamController<bool>();
@@ -224,9 +235,9 @@ void main() {
 
           await initialize(tester);
 
-          update(90.0);
+          updateValue(90.0);
           await settle();
-          update(10.0);
+          updateValue(10.0);
           await settle();
 
           expect(
