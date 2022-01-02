@@ -31,11 +31,11 @@ typedef OnOffControllerChangeListener = void Function(bool state);
 ///
 /// It will reset state on [upperLimit] or [lowerLimit] properties updates, if
 /// [isResetStateOnBoundaryUpdate] is set to true.
-/// (which is true by default).
+/// (which is false by default).
 ///
 /// It will reset state on [initialState] property updates, if
 /// [isResetStateOnBoundaryUpdate] is set to true.
-/// (which is true by default).
+/// (which is false by default).
 ///
 /// [listener] will be called for initial state if [isCallChangeListenerForInitialState] is true.
 /// (which is true by default).
@@ -44,8 +44,8 @@ typedef OnOffControllerChangeListener = void Function(bool state);
 class OnOffControllerBuilder extends StatefulWidget {
   const OnOffControllerBuilder({
     Key? key,
-    this.isResetStateOnBoundaryUpdate = true,
-    this.isResetStateOnInitialStateUpdate = true,
+    this.isResetStateOnBoundaryUpdate = false,
+    this.isResetStateOnInitialStateUpdate = false,
     this.isCallChangeListenerForInitialState = true,
     this.initialState = false,
     required this.upperLimit,
@@ -182,7 +182,7 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
     properties.add(FlagProperty(
       'isResetStateOnBoundaryUpdate',
       value: widget.isResetStateOnBoundaryUpdate,
-      defaultValue: true,
+      defaultValue: false,
       showName: true,
       ifTrue: 'true - resets controller state on '
           'widget boundary properties updates',
@@ -192,7 +192,7 @@ class _OnOffControllerBuilderState extends State<OnOffControllerBuilder> {
     properties.add(FlagProperty(
       'isResetStateOnInitialStateUpdate',
       value: widget.isResetStateOnInitialStateUpdate,
-      defaultValue: true,
+      defaultValue: false,
       showName: true,
       ifTrue: 'true - resets controller state on '
           'widget initial state property updates',
