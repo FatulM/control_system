@@ -213,10 +213,11 @@ void main() {
 
           await initialize(tester);
 
+          await check(false);
           updateValue(90.0);
-          await settle();
+          await check(true);
           updateValue(10.0);
-          await settle();
+          await check(false);
 
           expect(
             states,
@@ -238,10 +239,11 @@ void main() {
 
           await initialize(tester);
 
+          await check(false);
           updateValue(90.0);
-          await settle();
+          await check(true);
           updateValue(10.0);
-          await settle();
+          await check(false);
 
           expect(
             states,
