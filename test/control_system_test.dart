@@ -349,6 +349,95 @@ void main() {
           );
         },
       );
+
+      testWidgets(
+        'given reset on boundary update is enabled then '
+        'should reset state if initial state changes '
+        'and also we change value to match changed initial state',
+        (tester) async {
+          callForInitial = true;
+          resetOnInitial = false;
+          resetOnBounds = true;
+
+          streamController = StreamController<bool>();
+          listener = (bool state) {
+            streamController!.add(state);
+          };
+          final stream = streamController!.stream;
+
+          await initialize(tester);
+
+          // 1:
+          await settle();
+          updateValue(90);
+          await settle();
+
+          // 2:
+          update(() => upperLimit = 70.0);
+          await settle();
+
+          // 3:
+          update(() => lowerLimit = 30.0);
+          await settle();
+
+          expect(
+            stream,
+            emitsInOrder(<Matcher>[
+              // 1:
+              isFalse,
+              isTrue,
+              // 2: should oscillate:
+              isFalse,
+              isTrue,
+              // 3: should oscillate:
+              isFalse,
+              isTrue,
+            ]),
+          );
+        },
+      );
+
+      testWidgets(
+        'given reset on boundary update is NOT enabled then '
+        'should reset state if initial state changes '
+        'and also we change value to match changed initial state',
+        (tester) async {
+          callForInitial = true;
+          resetOnInitial = false;
+          resetOnBounds = false;
+
+          streamController = StreamController<bool>();
+          listener = (bool state) {
+            streamController!.add(state);
+          };
+          final stream = streamController!.stream;
+
+          await initialize(tester);
+
+          // 1:
+          await settle();
+          updateValue(90);
+          await settle();
+
+          // 2:
+          update(() => upperLimit = 70.0);
+          await settle();
+
+          // 3:
+          update(() => lowerLimit = 30.0);
+          await settle();
+
+          expect(
+            stream,
+            emitsInOrder(<Matcher>[
+              // 1:
+              isFalse,
+              isTrue,
+              // 2,3: nothing
+            ]),
+          );
+        },
+      );
     });
   });
 }
