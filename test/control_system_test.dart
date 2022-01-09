@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:control_system/control_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,7 +53,7 @@ void main() {
       StateSetter? stateSetter;
       OnOffControllerChangeListener? listener;
 
-      StreamController<bool>? streamController;
+      List<bool>? states;
 
       setUp(() {
         resetOnBounds = true;
@@ -70,7 +68,7 @@ void main() {
         stateSetter = null;
         listener = null;
 
-        streamController = null;
+        states = null;
       });
 
       tearDown(() {
@@ -78,8 +76,7 @@ void main() {
         stateSetter = null;
         listener = null;
 
-        streamController?.close();
-        streamController = null;
+        states = null;
       });
 
       Future<void> initialize(WidgetTester tester) async {
@@ -133,6 +130,13 @@ void main() {
 
       void updateValue(double newValue) {
         update(() => value = newValue);
+      }
+
+      void registerChangeListener() {
+        states = [];
+        listener = (state) {
+          states!.add(state);
+        };
       }
 
       testWidgets(
@@ -205,12 +209,7 @@ void main() {
         'listener should capture all state changes with initial state',
         (tester) async {
           callForInitial = true;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -220,11 +219,11 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
-              isFalse,
-              isTrue,
-              isFalse,
+            states,
+            equals(<bool>[
+              false,
+              true,
+              false,
             ]),
           );
         },
@@ -235,12 +234,7 @@ void main() {
         'listener should capture all state changes WITHOUT initial state',
         (tester) async {
           callForInitial = false;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -250,10 +244,10 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
-              isTrue,
-              isFalse,
+            states,
+            equals(<bool>[
+              true,
+              false,
             ]),
           );
         },
@@ -265,12 +259,7 @@ void main() {
         (tester) async {
           callForInitial = true;
           resetOnInitial = true;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -279,12 +268,12 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
-              isFalse,
+            states,
+            equals(<bool>[
+              false,
               // should be changed immediately back and forth:
-              isTrue,
-              isFalse,
+              true,
+              false,
             ]),
           );
         },
@@ -297,12 +286,7 @@ void main() {
         (tester) async {
           callForInitial = true;
           resetOnInitial = true;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -312,11 +296,11 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
-              isFalse,
+            states,
+            equals(<bool>[
+              false,
               // should be not oscillate:
-              isTrue,
+              true,
             ]),
           );
         },
@@ -327,13 +311,8 @@ void main() {
         'should NOT reset state if initial state changes',
         (tester) async {
           callForInitial = true;
-          resetOnInitial = true;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          resetOnInitial = false;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -342,9 +321,9 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
-              isFalse,
+            states,
+            equals(<bool>[
+              false,
             ]),
           );
         },
@@ -358,12 +337,7 @@ void main() {
           callForInitial = true;
           resetOnInitial = false;
           resetOnBounds = true;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -381,17 +355,17 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
+            states,
+            equals(<bool>[
               // 1:
-              isFalse,
-              isTrue,
+              false,
+              true,
               // 2: should oscillate:
-              isFalse,
-              isTrue,
+              false,
+              true,
               // 3: should oscillate:
-              isFalse,
-              isTrue,
+              false,
+              true,
             ]),
           );
         },
@@ -405,12 +379,7 @@ void main() {
           callForInitial = true;
           resetOnInitial = false;
           resetOnBounds = false;
-
-          streamController = StreamController<bool>();
-          listener = (bool state) {
-            streamController!.add(state);
-          };
-          final stream = streamController!.stream;
+          registerChangeListener();
 
           await initialize(tester);
 
@@ -428,11 +397,11 @@ void main() {
           await settle();
 
           expect(
-            stream,
-            emitsInOrder(<Matcher>[
+            states,
+            equals(<bool>[
               // 1:
-              isFalse,
-              isTrue,
+              false,
+              true,
               // 2,3: nothing
             ]),
           );
