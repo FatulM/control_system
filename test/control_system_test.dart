@@ -175,6 +175,30 @@ void main() {
       );
 
       testWidgets(
+        'given default configuration '
+        'when we start between bounds then '
+        'basic interaction should work correctly',
+        (tester) async {
+          initialState = true;
+          value = 50;
+
+          await initialize(tester);
+
+          // value = 50.0
+          await check(true);
+
+          updateValue(30.0);
+          await check(false);
+
+          updateValue(50.0);
+          await check(false);
+
+          updateValue(70.0);
+          await check(true);
+        },
+      );
+
+      testWidgets(
         'state changes should be only on `pass` not on `equal or pass`',
         (tester) async {
           await initialize(tester);
